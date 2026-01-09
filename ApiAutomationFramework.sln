@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35919.96 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiAutomationFramework", "ApiAutomationFramework\ApiAutomationFramework.csproj", "{ED413AB3-4BB7-405D-AFA0-C97625B9E081}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APITestSolution", "APITestSolution\APITestSolution.csproj", "{278E4A71-BE83-4DAC-8C80-07935D51892B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ED413AB3-4BB7-405D-AFA0-C97625B9E081}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED413AB3-4BB7-405D-AFA0-C97625B9E081}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED413AB3-4BB7-405D-AFA0-C97625B9E081}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED413AB3-4BB7-405D-AFA0-C97625B9E081}.Release|Any CPU.Build.0 = Release|Any CPU
+		{278E4A71-BE83-4DAC-8C80-07935D51892B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{278E4A71-BE83-4DAC-8C80-07935D51892B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{278E4A71-BE83-4DAC-8C80-07935D51892B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{278E4A71-BE83-4DAC-8C80-07935D51892B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A6BAED66-E064-4267-87B5-F735D4481CBF}
+	EndGlobalSection
+EndGlobal
