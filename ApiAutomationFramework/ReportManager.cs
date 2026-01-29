@@ -21,6 +21,7 @@ namespace ApiAutomationFramework
             var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
 
             // ✅ Move Reports folder to solution root
+            // C:\Users\sh63656\source\repos\ApiAutomationFramework\APITestSolution\bin\Reports
             var solutionRoot = Directory.GetParent(AppContext.BaseDirectory).Parent.Parent.FullName;
             var reportsDir = Path.Combine(solutionRoot, "Reports");
             Directory.CreateDirectory(reportsDir);

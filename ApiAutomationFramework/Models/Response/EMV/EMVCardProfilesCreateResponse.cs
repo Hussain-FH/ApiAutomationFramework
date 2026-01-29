@@ -15,5 +15,4 @@ namespace ApiAutomationFramework.Models.Response.EMV
         public string expirationDate { get; set; }
         public string discription { get; set; }
     }
-
 }

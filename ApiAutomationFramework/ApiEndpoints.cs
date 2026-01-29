@@ -19,17 +19,21 @@ namespace ApiAutomationFramework
         private static string Url(string path) => $"{BaseUrl}/{path}";
 
         // ✅ API Endpoints
+
+
+        //EMV CardProfiles
         public static string EMVCardProfiles_create => Url("cardprofiles");
-        public static string EMVCardProfiles_Gett(string id) => Url($"users/{id}");
-        public static string EMVCardProfiles_Delete => Url("users");
-        public static string UpdateUser(string id) => Url($"users/{id}");
-        public static string DeleteUser(string id) => Url($"users/{id}");
-
-
+        public static string EMVCardProfiles_update => Url("cardprofiles");
+        public static string EMVCardProfiles_Get => Url("cardprofiles");
+        
         //users  
 
         public static string Users_createuser => Url("users"); 
         public static string Users_updateuser => Url("users/updateuser");
+        public static string Users_GetUsers => Url("users?PclId=13&IsInternal=true");
+        public static string UpdateUser(string id) => Url($"users/{id}");
+        public static string DeleteUser(string id) => Url($"users/{id}");
+
 
         // ✅ Auth Endpoint
         public static string SignIn => AuthUrl;
