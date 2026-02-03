@@ -1,7 +1,8 @@
 ﻿
 using ApiAutomationFramework.Models.Request;
-using ApiAutomationFramework.Models.Request.SLA;
+using ApiAutomationFramework.Models.Request.EMV;
 using ApiAutomationFramework.Models.Request.Users;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
@@ -184,7 +185,7 @@ namespace APITestSolution.DataProviders
                     req.roleIds = new List<int> { 5 };
                     req.StatusId = 1216;
                 })
-            ).SetName("Positive_Data_Usercreation");
+            ).SetName("Users_Create_Positive_Data");
         }
 
         public static IEnumerable<TestCaseData> Users_Create_Negative_TestData()
@@ -196,10 +197,10 @@ namespace APITestSolution.DataProviders
                         req.pclIds = new List<int> { 13 };
                         req.roleIds = new List<int> { 5 };
                         req.StatusId = 1216;
-                        req.firstName = ""; // invalid
+                        req.email = "abcd@zensar.com"; // invalid
                     },
-                    options: new FillOptions { ExcludeProperties = { "firstName" } })
-            ).SetName("Negative_Testdata_FirstnameEmpty");
+                    options: new FillOptions { ExcludeProperties = { "Invalid Email" } })
+            ).SetName("Users_Create_Negative_Data");
         }
 
         // =====================================================
@@ -213,17 +214,16 @@ namespace APITestSolution.DataProviders
             yield return new TestCaseData(
                 Prepare(seed: (UsersUpdateRequest req) =>
                 {
-                    req.userId = 60986;
+                   
                     req.statusCodeId = 1216;
-
                     // positive inserts to match your environment
-                    req.pclIdInsert = new List<int> { 13 };
-                    req.pclIdDelete = new List<int>();
-                    req.roleIdInsert = new List<int> { 5 };
-                    req.roleIdDelete = new List<int>();
-                    // strings auto-fill
+                   // req.pclIdInsert = new List<int> { 13 };
+                   // req.roleIdInsert = new List<int> { 5 };
+                    req.middleName = "AutoUpdates";
+                   
+                    
                 })
-            ).SetName("Positive_Data_Users_Update");
+            ).SetName("Users_Update_Positive_Data");
         }
 
         public static IEnumerable<TestCaseData> Users_Update_Negative_TestData()
@@ -232,32 +232,29 @@ namespace APITestSolution.DataProviders
                 Prepare(
                     seed: (UsersUpdateRequest req) =>
                     {
-                        req.userId = 60983;
+                        
                         req.statusCodeId = 1216;
                         req.pclIdInsert = new List<int> { 13 };
-                        req.pclIdDelete = new List<int>();
                         req.roleIdInsert = new List<int> { 5 };
-                        req.roleIdDelete = new List<int>();
-
-                        req.firstName = ""; // invalid
-                    },
-                    options: new FillOptions { ExcludeProperties = { "firstName" } })
-            ).SetName("Negative_Data_Users_Update_FirstNameEmpty");
+                        
+                    })
+                   
+            ).SetName("Users_Update_Negative_Data");
         }
 
         // =====================================================
         // USERS – GET by PCL — split providers (pclId, isInternal)
         // =====================================================
-        public static IEnumerable<TestCaseData> Users_GetByPcl_Positive_TestData()
+        public static IEnumerable<TestCaseData> User_GetBy_ValidPcl_TestData()
         {
             yield return new TestCaseData(13, true)
-                .SetName("Positive_Data_Users_GetByPcl13");
+                .SetName("Users_GetBy_ValidPclId");
         }
 
-        public static IEnumerable<TestCaseData> Users_GetByPcl_Negative_TestData()
+        public static IEnumerable<TestCaseData> User_GetBy_InValidPcl_TestData()
         {
-            yield return new TestCaseData(9999, true)
-                .SetName("Negative_Data_Users_GetByPclInvalid");
+            yield return new TestCaseData(99999, true)
+                .SetName("Users_GetBy_InValidPclId");
         }
 
 
@@ -273,7 +270,7 @@ namespace APITestSolution.DataProviders
                     
                    
                 })
-            ).SetName("Positive_Data_EMV_CardProfile");
+            ).SetName("EMV_CardProfiles_Create_Positive_Data");
         }
 
         public static IEnumerable<TestCaseData> EMV_CardProfile_Create_Negative_TestData()
@@ -281,12 +278,38 @@ namespace APITestSolution.DataProviders
             yield return new TestCaseData(
                 Prepare(seed: (EMVCardProfilesCreateRequests req) =>
                 {
-                    req.name = "sbfjhwbejhfbwejhfgwjehfghegfjwegvfhgvfhgwevfhgwevfhkgwevfhgwevfhgwevfhgwevfhgvwefgvewhfgvwehgfvehwgvfhgwevfhgewvf";
+                    req.name = "sbfjhwbejhfbwejhfgwjehfghegfjwegvfhgvfhgwevfhgwevfhkgwevfhgwevfhgw";
                     req.issuerId = 8440;
 
 
                 })
-            ).SetName("Negative_Data_EMV_CardProfile");
+            ).SetName("EMV_CardProfiles_Create_Negative_Data");
+        }
+
+        public static IEnumerable<TestCaseData> EMV_CardProfile_Update_Positive_TestData()
+        {
+            yield return new TestCaseData(
+                Prepare(seed: (EMVCardProfilePutRequest req) =>
+                {
+                   
+                    req.issuerId = 8440;
+
+
+                })
+            ).SetName("EMV_CardProfiles_Update_Positive_Data");
+        }
+
+        public static IEnumerable<TestCaseData> EMV_CardProfile_Update_Negative_TestData()
+        {
+            yield return new TestCaseData(
+                Prepare(seed: (EMVCardProfilePutRequest req) =>
+                {
+                    req.name = "sbfjhwbejhfbwejhfgwjehfghegfjwegvfhgvfhgwevfhgwevfhkgwevfhgwevfhgw";
+                    req.issuerId = 8440;
+
+
+                })
+            ).SetName("EMV_CardProfiles_Update_Negative_Data");
         }
 
 

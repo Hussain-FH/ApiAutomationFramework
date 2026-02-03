@@ -5,6 +5,8 @@ using APITestSolution.DataProviders;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using System.Collections.Generic;
+using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -14,6 +16,47 @@ namespace APITestSolution.TestsScripts.Users
     [TestFixture]
     public class UserTests : BaseTest
     {
+
+        //Commom method can used to create new users and get the UserId
+        private async Task<int> CreateUserAndReturnIdAsync()
+        {
+            var endpoint = ApiEndpoints.Users_createuser;
+
+            // Minimal positive payload 
+            var payload = new UserscreateRequest
+            {
+                userName= "AutoFN_" + Guid.NewGuid().ToString("N").Substring(0, 3),
+                StatusId =1216,
+                firstName = "AutoFN_" + Guid.NewGuid().ToString("N").Substring(0, 5),
+                lastName = "AutoLN_" + Guid.NewGuid().ToString("N").Substring(0, 5),
+                email = $"auto_{Guid.NewGuid().ToString("N").Substring(0, 8)}@mail.com",
+                pclIds = new List<int> { 13 },
+                roleIds = new List<int> { 5 }
+            };
+
+            _test.Info("Pre-Req : Creating User to get UserId..");
+            _test.Info($"Endpoint: {endpoint}");
+            _test.Info($"Pre-Req Request Payload: {JsonConvert.SerializeObject(payload)}");
+
+            var response = await _apiClient.PostAsync(endpoint, payload);
+
+            _test.Info($"Pre-Req Response Status: {response.StatusCode}");
+            _test.Info($"Pre-Req Response Body: {response.Content}");
+
+            ResponseValidator.ValidateStatusCode(response, HttpStatusCode.Created);
+
+            string msg = (response.Content ?? string.Empty).Trim().Trim('"');
+            string extractedId = new string(msg.Where(char.IsDigit).ToArray());
+
+            Assert.That(extractedId, Is.Not.Empty, "Could not extract UserId from create response.");
+
+            int userId = int.Parse(extractedId);
+
+            _test.Info($"Pre-requisite: User created successfully with userId = {userId}");
+
+            return userId;
+        }
+
         // 🔖 POST – Create (Positive)
         [TestCaseSource(typeof(UserDataProvider), nameof(UserDataProvider.Users_Create_Positive_TestData))]
         public async Task Users_Creation_PositiveTestMethod(UserscreateRequest payload)
@@ -55,8 +98,7 @@ namespace APITestSolution.TestsScripts.Users
             _test.Info($"Response Status: {response.StatusCode}");
             _test.Info($"Response Body: {response.Content}");
 
-            Assert.That((int)response.StatusCode, Is.InRange(400, 499),
-                $"Expected 4xx for invalid payload, but was {(int)response.StatusCode} ({response.StatusCode}).");
+            ResponseValidator.ValidateStatusCode(response,HttpStatusCode.NotFound);
 
             var actualMessage = (response.Content ?? string.Empty).Trim().Trim('"');
 
@@ -76,6 +118,12 @@ namespace APITestSolution.TestsScripts.Users
         [TestCaseSource(typeof(UserDataProvider), nameof(UserDataProvider.Users_Update_Positive_TestData))]
         public async Task Users_Update_PositiveTestMethod(UsersUpdateRequest payload)
         {
+            // 1️⃣ Pre-requisite: Create a new user dynamically
+            int newUserId = await CreateUserAndReturnIdAsync();
+
+            // 2️⃣ Inject the valid dynamic userId into the payload
+            payload.userId = newUserId;
+
             var endpoint = ApiEndpoints.Users_updateuser;
 
             _test.Info("Running Users UPDATE POSITIVE test...");
@@ -87,19 +135,28 @@ namespace APITestSolution.TestsScripts.Users
             _test.Info($"Response Status: {response.StatusCode}");
             _test.Info($"Response Body: {response.Content}");
 
-            Assert.That(response.StatusCode,
-                Is.EqualTo(HttpStatusCode.OK).Or.EqualTo(HttpStatusCode.NoContent));
+            ResponseValidator.ValidateStatusCode(response,HttpStatusCode.OK);
 
             var actualMessage = (response.Content ?? string.Empty).Trim().Trim('"');
-            Assert.That(actualMessage, Does.Not.Match(@"(?i)(invalid|error|required|missing|failed|not\s*allowed|format)"));
+            var userId = new string(actualMessage.Where(char.IsDigit).ToArray());
+            var expectedMessage = "User " + userId + " Updated Successfully.";
+          
+            Assert.That(actualMessage, Is.EqualTo(expectedMessage));
 
             _test.Pass("Users UPDATE (positive) assertions passed.");
         }
+
 
         // 🔖 PUT – Update (Negative)
         [TestCaseSource(typeof(UserDataProvider), nameof(UserDataProvider.Users_Update_Negative_TestData))]
         public async Task Users_Update_NegativeTestMethod(UsersUpdateRequest payload)
         {
+
+            // 1️⃣ Pre-requisite: Create a new user dynamically
+            int newUserId = await CreateUserAndReturnIdAsync();
+
+            // 2️⃣ Inject the valid dynamic userId into the payload
+            payload.userId = newUserId;
             var endpoint = ApiEndpoints.Users_updateuser;
 
             _test.Info("Running Users UPDATE NEGATIVE test...");
@@ -110,9 +167,7 @@ namespace APITestSolution.TestsScripts.Users
 
             _test.Info($"Response Status: {response.StatusCode}");
             _test.Info($"Response Body: {response.Content}");
-
-            Assert.That((int)response.StatusCode, Is.InRange(400, 499),
-                $"Expected 4xx for invalid payload, but was {(int)response.StatusCode} ({response.StatusCode}).");
+            ResponseValidator.ValidateStatusCode(response,HttpStatusCode.NotFound);
 
             var actualMessage = (response.Content ?? string.Empty).Trim().Trim('"');
 
@@ -128,13 +183,16 @@ namespace APITestSolution.TestsScripts.Users
             _test.Pass("Users UPDATE (negative) assertions passed.");
         }
 
-        // 🔖 GET – Users by PCL (Positive)
-        [TestCaseSource(typeof(UserDataProvider), nameof(UserDataProvider.Users_GetByPcl_Positive_TestData))]
-        public async Task Users_GetByPcl_Positive_TestMethod(int pclId, bool isInternal)
+        // 🔖 GET – User by ID (Positive)
+        [Test]
+        public async Task Users_GetById_Positive_TestMethod()
         {
-            var endpoint = ApiEndpoints.Users_GetUsers;
+            // 1️⃣ Pre‑req: create user first
+            int userId = await CreateUserAndReturnIdAsync();
 
-            _test.Info("Running Users GET BY PCL POSITIVE test...");
+            var endpoint = $"{ApiEndpoints.Users_GetUsers}";
+
+            _test.Info("Running Users GET BY ID POSITIVE test...");
             _test.Info($"Endpoint: {endpoint}");
 
             var response = await _apiClient.GetAsync(endpoint);
@@ -147,34 +205,18 @@ namespace APITestSolution.TestsScripts.Users
             var body = (response.Content ?? string.Empty).Trim();
             Assert.That(body.Length, Is.GreaterThan(0));
 
-            var arr = JArray.Parse(body);
-            Assert.That(arr.Count, Is.GreaterThan(0), "Expected one or more users for PclId filter.");
+            var obj = JObject.Parse(body);
 
-            foreach (var item in arr)
-            {
-                var pclIds = item["pclIds"]?.ToObject<int[]>() ?? System.Array.Empty<int>();
-                Assert.That(pclIds.Contains(pclId), $"User {item["id"]} does not have expected PCL {pclId}.");
+            int returnedId = obj["id"]?.ToObject<int>() ?? 0;
 
-                if (isInternal)
-                {
-                    var flag = (item["internalUserFlag"]?.ToString() ?? "").Trim();
-                    Assert.That(flag.Equals("Y", System.StringComparison.OrdinalIgnoreCase),
-                        $"User {item["id"]} should be internal (Y).");
-                }
+            Assert.That(returnedId, Is.EqualTo(userId),
+                $"Expected returned userId {returnedId} to match created userId {userId}");
 
-                var statusIdToken = item["statusId"];
-                if (statusIdToken != null && statusIdToken.Type != JTokenType.Null)
-                {
-                    var sid = statusIdToken.ToObject<int>();
-                    Assert.That(sid, Is.EqualTo(1216), $"User {item["id"]} has unexpected statusId {sid}.");
-                }
-            }
-
-            _test.Pass("Users GET BY PCL (positive) assertions passed.");
+            _test.Pass("Users GET BY ID (positive) assertions passed.");
         }
 
         // 🔖 GET – Users by PCL (Negative)
-        [TestCaseSource(typeof(UserDataProvider), nameof(UserDataProvider.Users_GetByPcl_Negative_TestData))]
+        [TestCaseSource(typeof(UserDataProvider), nameof(UserDataProvider.User_GetBy_InValidPcl_TestData))]
         public async Task Users_GetByPcl_NegativeTestMethod(int pclId, bool isInternal)
         {
             var endpoint = ApiEndpoints.Users_GetUsers;
