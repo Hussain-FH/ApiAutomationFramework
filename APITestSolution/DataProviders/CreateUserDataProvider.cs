@@ -2,7 +2,6 @@
 using ApiAutomationFramework.Models.Request;
 using ApiAutomationFramework.Models.Request.EMV;
 using ApiAutomationFramework.Models.Request.Users;
-using ApiAutomationFramework.Models.Request.SLA;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
 using NUnit.Framework;
