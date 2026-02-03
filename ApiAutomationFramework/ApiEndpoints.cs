@@ -37,5 +37,17 @@ namespace ApiAutomationFramework
 
         // ✅ Auth Endpoint
         public static string SignIn => AuthUrl;
+
+        //SLA
+        public static string SLA_createuser => Url("slaconfigurationparameters");
+        public static string SLA_updateuser => Url("slaconfigurationparameters");
+        public static string SLA_Getusers => Url("slaconfigurationparameters?PclId=101");
+        public static string SLA_Deleteusers => Url("slaconfigurationparameters?Id=16");
+
+
+
+
+
+
     }
 }

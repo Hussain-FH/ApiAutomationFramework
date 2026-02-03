@@ -1,5 +1,6 @@
 ﻿
 using ApiAutomationFramework.Models.Request;
+using ApiAutomationFramework.Models.Request.SLA;
 using ApiAutomationFramework.Models.Request.Users;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -287,5 +288,154 @@ namespace APITestSolution.DataProviders
                 })
             ).SetName("Negative_Data_EMV_CardProfile");
         }
+
+
+        // =====================================================
+        // SLA – CREATE (POST) — split providers
+        // =====================================================
+        public static IEnumerable<TestCaseData> SLA_Create_Positive_TestData()
+        {
+            yield return new TestCaseData(
+                Prepare(seed: (SLACreateRequest req) =>
+                {
+                    req.id = 0;
+                    req.cardProgramId = 1111;
+                    req.isSpecialProject = true;
+                    req.isRepeatedEveryYear = true;
+                    req.sladay = 0;
+                    req.specialProjectMinimumShipmentCardCount = 1;
+                    req.specialProjectSladay = 33;
+                })
+            ).SetName("Positive_Data_Usercreation");
+        }
+
+        public static IEnumerable<TestCaseData> SLA_Create_Negative_TestData()
+        {
+            yield return new TestCaseData(
+                Prepare(
+                    seed: (SLACreateRequest req) =>
+                    {
+                        req.id = 0;
+                        req.cardProgramId = 1298;
+                        req.isSpecialProject = true;
+                        req.isRepeatedEveryYear = true;
+                        req.sladay =0;
+                        req.specialProjectMinimumShipmentCardCount = 1;
+                        req.specialProjectSladay = 00;
+
+                    },
+                    options: new FillOptions { ExcludeProperties = { "specialProjectSladay" } })
+            ).SetName("Negative_Testdata_FirstnameEmpty");
+        }
+
+        
+        // =====================================================
+        // SLA – UPDATE – POSITIVE
+        // =====================================================
+        public static IEnumerable<TestCaseData> SLA_Update_Positive_TestData()
+        {
+            yield return new TestCaseData(
+                Prepare(seed: (SLACreateRequest req) =>
+                {
+                    // ✅ Use a VALID SLA id from your DB here
+                    req.id = 1001;
+
+                    // Valid data for update
+                    req.cardProgramId = 1;              // any valid int (no card profile logic in tests)
+                    req.isSpecialProject = true;
+                    req.isRepeatedEveryYear = false;
+
+                    req.sladay = 10;
+                    req.specialProjectMinimumShipmentCardCount = 500;
+                    req.specialProjectSladay = 15;
+
+                    req.effectiveDate = new DateTime(2025, 01, 01);
+                    req.endDate = new DateTime(2025, 12, 31);
+                })
+            ).SetName("Positive_Data_SLA_Update");
+        }
+
+        // =====================================================
+        // SLA – UPDATE – NEGATIVE
+        // =====================================================
+        public static IEnumerable<TestCaseData> SLA_Update_Negative_TestData()
+        {
+            yield return new TestCaseData(
+                Prepare(
+                    seed: (SLACreateRequest req) =>
+                    {
+                        // Assume this id exists, but we'll make the payload invalid
+                        req.id = 1001;
+
+                        req.cardProgramId = 1;
+                        req.isSpecialProject = true;
+                        req.isRepeatedEveryYear = false;
+
+                        // ❌ INVALID: negative sladay and endDate before effectiveDate
+                        req.sladay = -5;
+                        req.specialProjectMinimumShipmentCardCount = 500;
+                        req.specialProjectSladay = 15;
+
+                        req.effectiveDate = new DateTime(2025, 12, 31);
+                        req.endDate = new DateTime(2025, 01, 01);
+                    },
+                    options: new FillOptions
+                    {
+                        // So auto-fill doesn't fix our invalid values
+                        ExcludeProperties =
+                        {
+                        "sladay",
+                        "effectiveDate",
+                        "endDate"
+                        }
+                    })
+            ).SetName("Negative_Data_SLA_Update_InvalidSladayAndDates");
+        }
+
+        // =====================================================
+        // SLA – GET by Id – POSITIVE
+        // =====================================================
+        public static IEnumerable<TestCaseData> SLA_Get_Positive_TestData()
+        {
+            // ✅ Use a VALID SLA id that is present in your environment
+            yield return new TestCaseData(1001)
+                .SetName("Positive_Data_SLA_Get_ById_1001");
+        }
+
+        // =====================================================
+        // SLA – GET by Id – NEGATIVE
+        // =====================================================
+        public static IEnumerable<TestCaseData> SLA_Get_Negative_TestData()
+        {
+            // ❌ Use an ID that does NOT exist
+            yield return new TestCaseData(999999)
+                .SetName("Negative_Data_SLA_Get_ById_Invalid");
+        }
+
+        // =====================================================
+        // SLA – DELETE – POSITIVE
+        // =====================================================
+        public static IEnumerable<TestCaseData> SLA_Delete_Positive_TestData()
+        {
+            // ✅ Use an SLA id that CAN be deleted in your test env
+            yield return new TestCaseData(2002)
+                .SetName("Positive_Data_SLA_Delete_ById_2002");
+        }
+
+        // =====================================================
+        // SLA – DELETE – NEGATIVE
+        // =====================================================
+        public static IEnumerable<TestCaseData> SLA_Delete_Negative_TestData()
+        {
+            // ❌ ID that does not exist or cannot be deleted
+            yield return new TestCaseData(999999)
+                .SetName("Negative_Data_SLA_Delete_ById_Invalid");
+        }
+
+        // NOTE:
+        // - Prepare<T> and FillOptions are assumed to be the same helpers
+        //   you already use in UserDataProvider.
     }
+
 }
+
