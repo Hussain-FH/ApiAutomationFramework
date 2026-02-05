@@ -39,10 +39,10 @@ namespace ApiAutomationFramework
         public static string SignIn => AuthUrl;
 
         //SLA
-        public static string SLA_createuser => Url("slaconfigurationparameters");
-        public static string SLA_updateuser => Url("slaconfigurationparameters");
-        public static string SLA_Getusers => Url("slaconfigurationparameters?PclId=101");
-        public static string SLA_Deleteusers => Url("slaconfigurationparameters?Id=16");
+        public static string SLA_createSLA => Url("slaconfigurationparameters");
+        public static string SLA_updateSLA => Url("slaconfigurationparameters");
+        public static string SLA_GetSLA => Url("slaconfigurationparameters?PclId=13");
+        public static string SLA_DeleteSLA(int id) => Url($"slaconfigurationparameters?Id={id}");
 
 
 
