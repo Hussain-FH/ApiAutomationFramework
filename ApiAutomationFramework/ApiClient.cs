@@ -59,6 +59,13 @@ public class ApiClient : IApiClient
             var request = CreateRequest(endpoint, Method.Delete);
             return await _client.ExecuteAsync(request);
         }
+
+        public async Task<RestResponse> DeleteAsync(string endpoint, object payload)
+        {
+            var request = CreateRequest(endpoint, Method.Delete);
+            request.AddJsonBody(payload);
+            return await _client.ExecuteAsync(request);
+        }
     }
 
 }
