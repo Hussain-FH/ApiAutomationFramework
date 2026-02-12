@@ -1,0 +1,15 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ApiAutomationFramework.Models.Response.Categories
+{
+    public  class CategoriesMakedefaultResponse
+    {
+        public int PclId { get; set; }
+        public int CategoryId { get; set; }
+        public int CategoryTypeId { get; set; }
+    }
+}

@@ -1,8 +1,11 @@
 ﻿
 using ApiAutomationFramework.Models.Request;
+using ApiAutomationFramework.Models.Request.ClientSettiClientprofiles;
+using ApiAutomationFramework.Models.Request.ClientSettingsHotStamps;
 using ApiAutomationFramework.Models.Request.EMV;
 using ApiAutomationFramework.Models.Request.SLA;
 using ApiAutomationFramework.Models.Request.Users;
+using ApiAutomationFramework.Models.Request.Categories;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -459,8 +462,347 @@ namespace APITestSolution.DataProviders
         // NOTE:
         // - Prepare<T> and FillOptions are assumed to be the same helpers
         //   you already use in UserDataProvider.
+
+
+        // =====================================================
+        // Client Settings - Hot Stamps – CREATE – POSITIVE
+        // =====================================================
+
+        public static IEnumerable<TestCaseData> CSHotStamp_Create_Positive_TestData()
+        {
+            yield return new TestCaseData(
+                Prepare(seed: (CSHotStampsCreateR req) =>
+                {
+                    req.pclId = 13;
+                    req.name = "Gold Stamp";
+                    req.description = "High quality";
+                    req.userName = "Samantha";
+                })
+            ).SetName("Positive_Data_CSHotStamp_Create");
+        }
+
+        // =====================================================
+        // Client Settings - Hot Stamps – CREATE – NEGATIVE
+        // =====================================================
+        public static IEnumerable<TestCaseData> CSHotStamp_Create_Negative_TestData()
+        {
+            yield return new TestCaseData(
+                Prepare(
+                    seed: (CSHotStampsCreateR req) =>
+                    {
+                        req.pclId = 13;
+                        req.name = null;  // ❌ invalid
+                        req.description = "Invalid test case";
+                        req.userName = "UN";
+                    },
+                    options: new FillOptions
+                    {
+                        ExcludeProperties = { "name" } // ensure null stays null
+                    })
+            ).SetName("Negative_Data_CSHotStamp_Create_NameMissing");
+        }
+
+        // =====================================================
+        // Client Settings - Hot Stamps – UPDATE – POSITIVE
+        // =====================================================
+        public static IEnumerable<TestCaseData> CSHotStamp_Update_Positive_TestData()
+        {
+            yield return new TestCaseData(
+                Prepare(seed: (CSHotStampsUpdateR req) =>
+                {
+                    req.pclId = "13";
+                    req.id = 101;
+                    req.name = "Silver Stamp";
+                    req.description = "Updated hot stamp description";
+                    req.userName = "USNAme";
+                })
+            ).SetName("Positive_Data_CSHotStamp_Update");
+        }
+
+
+        // =====================================================
+        // Client Settings - Hot Stamps – UPDATE – NEGATIVE
+        // =====================================================
+
+        public static IEnumerable<TestCaseData> CSHotStamp_Update_Negative_TestData()
+        {
+            yield return new TestCaseData(
+                Prepare(
+                    seed: (CSHotStampsUpdateR req) =>
+                    {
+                        req.id = 999999;  // assume exists or ignore
+                        req.id = 13;
+                        req.name = "";    // ❌ invalid empty name
+                        req.description = "Invalid update attempt";
+                        req.userName = "kishor";
+                    },
+                    options: new FillOptions
+                    {
+                        ExcludeProperties = { "name" }
+                    })
+            ).SetName("Negative_Data_CSHotStamp_Update_InvalidName");
+        }
+
+        // =====================================================
+        // Client Settings - Hot Stamps – GET – POSITIVE
+        // =====================================================
+        public static IEnumerable<TestCaseData> CSHotStamp_Get_Positive_TestData()
+        {
+            yield return new TestCaseData(101) // provide valid id from your env
+                .SetName("Positive_Data_CSHotStamp_Get_ById_101");
+        }
+
+        // =====================================================
+        // Client Settings - Hot Stamps – GET – NEGATIVE
+        // =====================================================
+
+        public static IEnumerable<TestCaseData> CSHotStamp_Get_Negative_TestData()
+        {
+            yield return new TestCaseData(9999999)
+                .SetName("Negative_Data_CSHotStamp_Get_ById_Invalid");
+        }
+
+
+        // =====================================================
+        // CLIENT SETTINGS – CLIENT PROFILE – CREATE (POST)
+        // DTO: ClientprofilesCreateRequest
+        // =====================================================
+        public static IEnumerable<TestCaseData> CSClientProfile_Create_Positive_TestData()
+        {
+            yield return new TestCaseData(
+                Prepare(seed: (ClientprofilesCreateRequest req) =>
+                {
+                    req.pclId = "13";
+                    req.keyId = 28; // will be overwritten by pre-req helper in test if needed
+                    req.userName = "AutoUser_CP";
+                    req.value = "true";
+                    req.id = 0;
+                })
+            ).SetName("CSClientProfile_Create_Positive_Data");
+        }
+
+        public static IEnumerable<TestCaseData> CSClientProfile_Create_Negative_TestData()
+        {
+            // NEGATIVE CASE: invalid keyId and empty value
+            yield return new TestCaseData(
+                Prepare(
+                    seed: (ClientprofilesCreateRequest req) =>
+                    {
+                        req.pclId = "13";
+                        req.keyId = 99990000;              // invalid
+                        req.userName = "";          // invalid
+                        req.value = "true";             // invalid
+                    },
+                    options: new FillOptions { ExcludeProperties = { "", "" } }
+                )
+            ).SetName("CSClientProfile_Create_Negative_Data");
+        }
+
+        // =====================================================
+        // CLIENT SETTINGS – CLIENT PROFILE – UPDATE (PUT)
+        // DTO: ClientprofilesUpdateRequest
+        // =====================================================
+        public static IEnumerable<TestCaseData> CSClientProfile_Update_Positive_TestData()
+        {
+            yield return new TestCaseData(
+                Prepare(seed: (ClientprofilesUpdateRequest req) =>
+                {
+                    req.pclId = 13;
+                    req.keyId = 10; // will be overwritten by pre-req helper in test
+                    req.userName = "AutCP";
+                    req.value = "true";
+                })
+            ).SetName("CSClientProfile_Update_Positive_Data");
+        }
+
+
+        // =====================================================
+        // CLIENT SETTINGS – CLIENT PROFILE – GET MASTERDATA (GET)
+        // =====================================================
+        public static IEnumerable<TestCaseData> CSClientProfile_Get_Positive_TestData()
+        {
+            yield return new TestCaseData()
+                .SetName("CSClientProfile_GetMasterData_Positive");
+        }
+
+        public static IEnumerable<TestCaseData> CSClientProfile_Get_Negative_TestData()
+        {
+            // Negative by calling wrong route suffix (forces 404)
+            yield return new TestCaseData("clientprofiles/getmasterdata_invalid")
+                .SetName("CSClientProfile_GetMasterData_Negative_InvalidEndpoint");
+        }
+
+        // =====================================================
+        // CLIENT SETTINGS – CLIENT PROFILE – DELETE (DELETE)
+        // DTO: ClientprofilesDeleteRequest
+        // =====================================================
+        public static IEnumerable<TestCaseData> CSClientProfile_Delete_Positive_TestData()
+        {
+            yield return new TestCaseData(
+                Prepare(seed: (ClientprofilesDeleteRequest req) =>
+                {
+                    req.pclId = "13";
+                    req.keyId = 28; // will be overwritten by pre-req helper in test
+                    req.id = 1401772;
+                })
+            ).SetName("CSClientProfile_Delete_Positive_Data");
+        }
+
+        public static IEnumerable<TestCaseData> CSClientProfile_Delete_Negative_TestData()
+        {
+            // NEGATIVE: invalid keyId
+            yield return new TestCaseData(
+                Prepare(seed: (ClientprofilesDeleteRequest req) =>
+                {
+                    req.pclId = "13";
+                    req.keyId = 90000;  // invalid
+                    req.id = 1;
+                })
+            ).SetName("CSClientProfile_Delete_Negative_Data");
+        }
+
+
+        // =====================================================
+        // HotStampDropdown – GET – POSITIVE
+        // =====================================================
+        public static IEnumerable<TestCaseData> HotStampdrp_Get_Positive_TestData()
+        {
+            yield return new TestCaseData() // provide valid id from your env
+                .SetName("Positive_Data_HotStampdrp_Get_ById_13");
+        }
+
+        // =====================================================
+        // Tipping Module DropDown – GET – POSITIVE
+        // =====================================================
+        public static IEnumerable<TestCaseData> TippingModuleDrp_Get_Positive_TestData()
+        {
+            yield return new TestCaseData() // provide valid id from your env
+                .SetName("Positive_Data_TippingModuleDrp_Get_ById");
+        }
+
+        
+        // =====================================================
+        // Categories_Create_Positive_TestData
+        // =====================================================
+        public static IEnumerable Categories_Create_Positive_TestData()
+        {
+            yield return new TestCaseData(
+                new CategoriesCreateRequest
+                {
+                    Name = "Automated_Category",
+                    ParentCategoryId = 266,
+                    PclId = 118
+                }
+            ).SetName("CreateCategory_Valid_Parent1");
+        }
+
+        // =====================================================
+        // Categories_Create_Negative_TestData
+        // =====================================================
+
+        public static IEnumerable Categories_Create_Negative_TestData()
+        {
+            yield return new TestCaseData(
+                new CategoriesCreateRequest
+                {
+                    Name = "",          // invalid
+                    ParentCategoryId = 1,
+                    PclId = 100
+                }
+            ).SetName("CreateCategory_Invalid_EmptyName");
+        }
+
+
+        // =====================================================
+        // Categories_PUT_Rename_TestData
+        // =====================================================
+        public static IEnumerable Categories_PUT_Rename_TestData()
+        {
+            yield return new TestCaseData(
+                new CategoriesRenameRequest
+                {
+                    name = "Automated_Category",
+                    categoryId = 447,
+                    pclId = 127
+                }
+            ).SetName("PutCategory_Rename_Valid");
+        }
+
+        // =====================================================
+        // Categories_PUT_TurnOffON_TestData
+        // =====================================================
+        public static IEnumerable Categories_PUT_TurnOffON_TestData()
+        {
+            yield return new TestCaseData(
+                new CategoriesturnonoffRequest
+                {
+                   pclid= 13,
+                   categoryId= 447,
+                   active= true 
+                }
+            ).SetName("PutCategory_TurnOffON_Valid");
+        }
+
+        // =====================================================
+        // Categories_PUT_MoveupDown_TestData
+        // =====================================================
+        public static IEnumerable Categories_PUT_MoveupDown_TestData()
+        {
+            yield return new TestCaseData(
+                new CategoriesmoveupdownRequest
+                {
+                    pclid = 127,  
+                    isUp= true,  
+                    categoryId= 446, 
+                    parentCategoryId= 442 
+                }
+            ).SetName("PutCategory_MoveupDown_Valid");
+        }
+
+        // =====================================================
+        // Categories_PUT_MoveupDown_TestData
+        // =====================================================
+        public static IEnumerable Categories_PUT_Makedefault_TestData()
+        {
+            yield return new TestCaseData(
+                new CategoriesMakedefaultRequest
+                {
+                    PclId= 118 ,
+                    CategoryId=475,
+                    CategoryTypeId= 266
+                }
+            ).SetName("PutCategory_Makedefault_Valid");
+        }
+
+        //// =====================================================
+        // Categories_Delete_Positivr_TestData
+        // =====================================================
+        public static IEnumerable Categories_Delete_Positive_TestData()
+        {
+            yield return new TestCaseData(1).SetName("DeleteCategory_Positive");
+        }
+
+
+        // =====================================================
+        // CSP_Program_Positive_TestData
+        // =====================================================
+
+        // ✅ POSITIVE TEST DATA
+        public static IEnumerable CSPProgramCardholderdrp_Get_Positive_TestData()
+            {
+                yield return new TestCaseData(1).SetName("CSPProgramCardholderdrp_Get_Positive");
+            }
+
+            public static IEnumerable CSPProgramDymInfo_Get_Positive_TestData()
+            {
+                yield return new TestCaseData(1).SetName("CSPProgramDymInfo_Get_Positive");
+            }
+
+        public static IEnumerable CSPProgramComponent_Get_Positive_TestData()
+        {
+            yield return new TestCaseData(1).SetName("CSPProgramComponent_Get_Positive");
+        }
+
     }
-
 }
-
 
