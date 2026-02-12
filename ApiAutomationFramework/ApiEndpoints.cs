@@ -25,7 +25,12 @@ namespace ApiAutomationFramework
         public static string EMVCardProfiles_create => Url("cardprofiles");
         public static string EMVCardProfiles_update => Url("cardprofiles");
         public static string EMVCardProfiles_Get => Url("cardprofiles");
-        
+
+        //EMV Modules
+        public static string EMVModules_create => Url("modules");
+        public static string EMVModules_update => Url("modules");
+        public static string EMVModules_GetAll => Url("modules");
+
         //users  
 
         public static string Users_createuser => Url("users"); 

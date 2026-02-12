@@ -17,12 +17,12 @@ using System.Diagnostics.Metrics;
 namespace APITestSolution.TestsScripts.EMV
 {
     [TestFixture]
-    public class EMVCardProfileTests : BaseTest
+    public class EMV_Modules_Tests : BaseTest
     {
-        //common method to create new CardProfile record and used this Id and perform Put and Get and Delete operations
-        private async Task<int> CreateEmvCardProfileAndReturnIdAsync()
+        //common method to create new Modules record and used this Id and perform Put and Get and Delete operations
+        private async Task<int> CreateEmvModulesAndReturnIdAsync()
         {
-            var endpoint = ApiEndpoints.EMVCardProfiles_create;
+            var endpoint = ApiEndpoints.EMVModules_create;
 
             // Build a positive payload 
             var payload = new EMVCardProfilesCreateRequests
@@ -66,7 +66,7 @@ namespace APITestSolution.TestsScripts.EMV
             nameof(UserDataProvider.EMV_CardProfile_Create_Positive_TestData))]
         public async Task EMVCardProfile_Creation_PositiveTestMethod(EMVCardProfilesCreateRequests payload)
         {
-            var endpoint = ApiEndpoints.EMVCardProfiles_create;
+            var endpoint = ApiEndpoints.EMVModules_create;
 
             _test.Info("Running EMV Card Profile CREATE POSITIVE test...");
             _test.Info($"Endpoint: {endpoint}");
@@ -95,7 +95,7 @@ namespace APITestSolution.TestsScripts.EMV
             nameof(UserDataProvider.EMV_CardProfile_Create_Negative_TestData))]
         public async Task EMVCardProfile_Creation_NegativeTestMethod(EMVCardProfilesCreateRequests payload)
         {
-            var endpoint = ApiEndpoints.EMVCardProfiles_create;
+            var endpoint = ApiEndpoints.EMVModules_create;
 
             _test.Info("Running EMV Card Profile CREATE NEGATIVE test...");
             _test.Info($"Endpoint: {endpoint}");
@@ -132,8 +132,8 @@ namespace APITestSolution.TestsScripts.EMV
             nameof(UserDataProvider.EMV_CardProfile_Update_Positive_TestData))]
         public async Task EMVCardProfile_Update_PositiveTestMethod(EMVCardProfilePutRequest payload)
         {
-            // 1️⃣ Pre-requisite: Create a valid EMV Card Profile and get its Id
-            int cardProfileId = await CreateEmvCardProfileAndReturnIdAsync();
+            // 1️⃣ Pre-requisite: Create a valid EMV Modules and get its Id
+            int cardProfileId = await CreateEmvModulesAndReturnIdAsync();
 
             // 2️⃣ Inject the valid id into the PUT payload
             payload.cardprofileid = cardProfileId;
@@ -175,7 +175,7 @@ namespace APITestSolution.TestsScripts.EMV
         public async Task EMVCardProfile_Update_NegativeTestMethod(EMVCardProfilePutRequest payload)
         {
             // 1️⃣ Pre-requisite: Create a valid EMV Card Profile and get its Id
-            int cardProfileId = await CreateEmvCardProfileAndReturnIdAsync();
+            int cardProfileId = await CreateEmvModulesAndReturnIdAsync();
 
             // 2️⃣ Inject the valid id into the PUT payload
             payload.cardprofileid = cardProfileId;
@@ -215,7 +215,7 @@ namespace APITestSolution.TestsScripts.EMV
         public async Task EMVCardProfile_GetAll_Positive_TestMethod()
         {
             // 1️⃣ Pre-requisite: Create a valid EMV Card Profile and get its Id
-            int cardProfileId = await CreateEmvCardProfileAndReturnIdAsync();
+            int cardProfileId = await CreateEmvModulesAndReturnIdAsync();
 
             // 2️⃣ Call the GET ALL endpoint (no id in URL)
             var endpoint = ApiEndpoints.EMVCardProfiles_Get; 
