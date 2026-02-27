@@ -30,4 +30,9 @@
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Compile>
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Models\Response\ArchiveUpdateResponse\" />
+	  <Folder Include="Models\Response\Approval\" />
+	</ItemGroup>
 </Project>
