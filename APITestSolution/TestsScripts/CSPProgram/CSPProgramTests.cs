@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ApiAutomationFramework;
 using APITestSolution.DataProviders;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 
@@ -96,27 +97,69 @@ namespace APITestSolution.TestsScripts.CSPProgram
             _test.Info($"Response Status: {response.StatusCode}");
             _test.Info($"Response Body: {response.Content}");
 
-            //Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
-            //var body = (response.Content ?? string.Empty).Trim();
-            //Assert.That(body.Length, Is.GreaterThan(0), "Response body is empty.");
+            var body = (response.Content ?? string.Empty).Trim();
+            Assert.That(body.Length, Is.GreaterThan(0), "Response body is empty.");
 
-            //var arr = JArray.Parse(body);
+            var json = JObject.Parse(body);
 
-            //Assert.That(arr.Count, Is.GreaterThan(0), "Response array is empty.");
+            // ✅ Validate 'programInserts' exists
+            Assert.That(json["programInserts"], Is.Not.Null, "'programInserts' property is missing.");
 
-            //// ✅ Validate first element exists
-            //var firstItem = arr.First as JObject;
-            //Assert.That(firstItem, Is.Not.Null, "First element is null.");
+            var insertsArray = (JArray)json["programInserts"];
 
-            //int? firstId = (int?)firstItem["id"];
-            //Assert.That(firstId.HasValue, "First array element does not contain 'id'.");
+            // ✅ Validate array has at least one element
+            Assert.That(insertsArray.Count, Is.GreaterThan(0), "'programInserts' array is empty.");
 
-            _test.Pass("CSP Program Dynamic Info GET (positive) passed.");
+            // ⭐ TAKE FIRST ELEMENT
+            var firstInsert = (JObject)insertsArray.First;
+
+            // Validate first element contains expected properties
+            Assert.That(firstInsert["programInsertsId"], Is.Not.Null, "programInsertsId missing in first element.");
+            Assert.That(firstInsert["programInsertsName"], Is.Not.Null, "programInsertsName missing in first element.");
+            Assert.That(firstInsert["programInsertsPartNumber"], Is.Not.Null, "programInsertsPartNumber missing in first element.");
+
+            _test.Pass("Program Inserts validation passed successfully.");
+
+
         }
 
 
+        //CSP Order Shipment 
 
+        [TestCaseSource(typeof(UserDataProvider), nameof(UserDataProvider.OrderShipment_Get_Positive_TestData))]
+        public async Task OrderShipment_Get_Positive_Test(int id)
+        {
+            var endpoint = ApiEndpoints.OrderShipment_Get;
+
+            _test.Info("Running CSP Program Dynamic Info GET POSITIVE test...");
+            _test.Info($"Endpoint: {endpoint}");
+
+            var response = await _apiClient.GetAsync(endpoint);
+
+            _test.Info($"Response Status: {response.StatusCode}");
+            _test.Info($"Response Body: {response.Content}");
+
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+
+            var body = (response.Content ?? string.Empty).Trim();
+            Assert.That(body.Length, Is.GreaterThan(0), "Response body is empty.");
+
+            //JSON should be valid
+            dynamic json;
+            try
+            {
+                json = JsonConvert.DeserializeObject(body);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail("Response body is not a valid JSON. Exception: " + ex.Message);
+                return;
+            }
+
+
+        }
 
     }
 }

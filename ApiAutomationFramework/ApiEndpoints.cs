@@ -64,6 +64,12 @@ namespace ApiAutomationFramework
         public static string CSClientProfile_Get => Url("clientprofiles/getmasterdata");
         public static string CSClientProfile_Delete => Url("clientprofiles");
 
+        // bcssconfigurations
+        public static string bcssconfigurations_Create => Url("bcssconfigurations");
+        public static string bcssconfigurations_Update => Url("bcssconfigurations");
+
+        //bankidNumber_Get
+        public static string bankidNumber_Get => Url("bankidnumbers?pclid=13");
 
         //HotStampDie DropDown
         public static string HotStampDieDrp_Get => Url("programs/hotstampdie?PclId=13");
@@ -84,9 +90,51 @@ namespace ApiAutomationFramework
 
 
         //CSPProgram
-
         public static string CSPProgramCardholderdrp_Get => Url("programs/dynamicinformationcarrier?clientprogramcodeid=1458");
         public static string CSPProgramDymInfo_Get => Url("programs/dynamicinformationcarrier?clientprogramcodeid=1459");
-        public static string CSPProgramComponent_Get => Url("programs/cspprogramcomponents?CardProgramId=100");
+        public static string CSPProgramComponent_Get => Url("programs/cspprogramcomponents?CardProgramId=50155");
+
+
+        //Shared by program
+        public static string InsertSharedbyPrg_Get => Url("inserts/programs?id=11037");
+        public static string packingslipsSharedbyPrg_Get => Url("packingslips/programs?id=5182");
+        public static string activationlabelsSharedbyPrg_Get => Url("activationlabels/programs?Id=8139");
+        public static string LetterCarrierSharedbyPrg_Get => Url("lettercarriers/programs?id=103874");
+
+
+        //SOP config
+        public static string SOPConfig_Get => Url("manageclients/adhockeys?PclId=101");
+        public static string SOPConfig_Update => Url("manageclients");
+
+        // Image Reviewer
+        public static string ImageReviewer_Get => Url("imagereviewers?PclId=13&ispending=false");
+        public static string ImageReviewer_update => Url("imagereviewers");
+
+        //CSP Order Shipment
+        public static string OrderShipment_Get => Url("orders/ordershipmentdetails?ShipmentId=125");
+
+        //issuingbanks/archive
+        public static string BankArchive_update => Url("issuingbanks/archive");
+
+        //Approval
+        public static string Approval_Create => Url("approvals");
+        public static string Approval_Update => Url("approvals");
+        public static string ApprovalDuplicate_Create => Url("approvals/duplicateapproval?Id=74030&InComment=TESTDEPLOYGPR");
+
+        //Program Bulk upload
+        public static string bulkuploadtemplate_Get => Url("filesupload/downloadprogrambulkuploadtemplate");
+        public static string BulkUpload_Get => Url("bulkuploadprogram/bulkupload?PclId=13");
+        public static string BulkUploadErrLog_Get => Url("bulkuploadprogram/bulkuploaderrorlogdetails?FileUploadId=17998");
+        public static string BulkUploadcancel_Update => Url("bulkuploadprogram");
+
+
+        // Generalsettings-contactinfo
+        public static string Generalsettings_Create => Url("generalsettings/contactinfo");
+        public static string Generalsettings_Update => Url("generalsettings/contactinfo");
+
+
+
     }
+
+
 }

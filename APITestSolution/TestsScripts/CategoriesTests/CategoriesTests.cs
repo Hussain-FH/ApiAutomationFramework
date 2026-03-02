@@ -262,15 +262,5 @@ namespace APITestSolution.TestsScripts.CategoriesTests
         }
 
 
-
-
-
-
-
-
-
-       
-
-
     }
 }
