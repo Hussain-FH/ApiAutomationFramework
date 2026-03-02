@@ -6,6 +6,9 @@ using ApiAutomationFramework.Models.Request.EMV;
 using ApiAutomationFramework.Models.Request.SLA;
 using ApiAutomationFramework.Models.Request.Users;
 using ApiAutomationFramework.Models.Request.Categories;
+using ApiAutomationFramework.Models.Request.Approval;
+using static ApiAutomationFramework.Models.Request.GeneralsetContactinfo.ContactinfoCreateRequest;
+using static ApiAutomationFramework.Models.Request.GeneralsetContactinfo.ContactinfoUpdateRequest;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -15,6 +18,16 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using ApiAutomationFramework.Models.Request.SOPConfig;
+using ApiAutomationFramework.Models.Request.ImageReviewers;
+using ApiAutomationFramework.Models.Request.IssuingbanksArchive;
+using ApiAutomationFramework.Models.Request.Approval;
+using static NUnit.Framework.Internal.OSPlatform;
+using ApiAutomationFramework.Models.Request.BulkPrgUpload;
+using Azure.Core;
+using ApiAutomationFramework.Models.Request.bcssconfigurations;
+using ApiAutomationFramework.Models.Request.GeneralsetContactinfo;
+using Gherkin.Ast;
 
 namespace APITestSolution.DataProviders
 {
@@ -680,7 +693,7 @@ namespace APITestSolution.DataProviders
                 .SetName("Positive_Data_TippingModuleDrp_Get_ById");
         }
 
-        
+
         // =====================================================
         // Categories_Create_Positive_TestData
         // =====================================================
@@ -736,9 +749,9 @@ namespace APITestSolution.DataProviders
             yield return new TestCaseData(
                 new CategoriesturnonoffRequest
                 {
-                   pclid= 13,
-                   categoryId= 447,
-                   active= true 
+                    pclid = 13,
+                    categoryId = 447,
+                    active = true
                 }
             ).SetName("PutCategory_TurnOffON_Valid");
         }
@@ -751,10 +764,10 @@ namespace APITestSolution.DataProviders
             yield return new TestCaseData(
                 new CategoriesmoveupdownRequest
                 {
-                    pclid = 127,  
-                    isUp= true,  
-                    categoryId= 446, 
-                    parentCategoryId= 442 
+                    pclid = 127,
+                    isUp = true,
+                    categoryId = 446,
+                    parentCategoryId = 442
                 }
             ).SetName("PutCategory_MoveupDown_Valid");
         }
@@ -767,9 +780,9 @@ namespace APITestSolution.DataProviders
             yield return new TestCaseData(
                 new CategoriesMakedefaultRequest
                 {
-                    PclId= 118 ,
-                    CategoryId=475,
-                    CategoryTypeId= 266
+                    PclId = 118,
+                    CategoryId = 475,
+                    CategoryTypeId = 266
                 }
             ).SetName("PutCategory_Makedefault_Valid");
         }
@@ -789,20 +802,367 @@ namespace APITestSolution.DataProviders
 
         // ✅ POSITIVE TEST DATA
         public static IEnumerable CSPProgramCardholderdrp_Get_Positive_TestData()
-            {
-                yield return new TestCaseData(1).SetName("CSPProgramCardholderdrp_Get_Positive");
-            }
+        {
+            yield return new TestCaseData(1).SetName("CSPProgramCardholderdrp_Get_Positive");
+        }
 
-            public static IEnumerable CSPProgramDymInfo_Get_Positive_TestData()
-            {
-                yield return new TestCaseData(1).SetName("CSPProgramDymInfo_Get_Positive");
-            }
+        public static IEnumerable CSPProgramDymInfo_Get_Positive_TestData()
+        {
+            yield return new TestCaseData(1).SetName("CSPProgramDymInfo_Get_Positive");
+        }
 
         public static IEnumerable CSPProgramComponent_Get_Positive_TestData()
         {
             yield return new TestCaseData(1).SetName("CSPProgramComponent_Get_Positive");
         }
 
+
+        // =====================================================
+        // SharedByProgram_Positive_TestData
+        // =====================================================
+
+        //Insert
+        public static IEnumerable Insert_SharedByProgram_Get_Positive_TestData()
+        {
+            yield return new TestCaseData(1).SetName("Insert_SharedByProgram_Get_Positive");
+        }
+
+        //ActivationLabel
+        public static IEnumerable ActivationLabel_SharedByProgram_Get_Positive_TestData()
+        {
+            yield return new TestCaseData(1).SetName("ActivationLabel_SharedByProgram_Get_Positive");
+        }
+
+        //PackingSlip
+        public static IEnumerable PackingSlip_SharedByProgram_Get_Positive_TestData()
+        {
+            yield return new TestCaseData(1).SetName("PackingSlip_SharedByProgram_Get_Positive");
+        }
+
+        //LetterCarrier
+        public static IEnumerable LetterCarrier_SharedByProgram_Get_Positive_TestData()
+        {
+            yield return new TestCaseData(1).SetName("LetterCarrier_SharedByProgram_Get_Positive");
+        }
+
+        //SOP Config Get
+        public static IEnumerable SOPConfig_Get_Positive_TestData()
+        {
+            yield return new TestCaseData(1).SetName("SOPConfig_Get_Positive");
+        }
+
+
+        // =====================================================
+        // SOP Config – UPDATE – POSITIVE
+        // =====================================================
+        public static IEnumerable<TestCaseData> SOPConfig_Update_Positive_TestData()
+        {
+            yield return new TestCaseData(
+                Prepare(seed: (SOPConfigUpdateRequest req) =>
+                {
+                    req.id = 184;
+                    req.sopConfigurationName = "testing";
+                    req.fileRegex = ".txt";
+                    req.countryLookupOrder = ["1448"];
+                    req.isAssociationRulesEnabled = false;
+                    req.emailRecipients = "TEst456@arroweye.com";
+                    req.isEnabled = false;
+                    req.pluginClassId = 1033;
+                    req.isMappedProgramNameUsed = true;
+                    req.flagOrdersAsTest = true;
+                    req.isDuplicateEmbossingFileAllowed = false;
+                    req.isAllRecipientAddressesSaved = false;
+                    req.fileEncodingCodeId = "1457";
+                })
+            ).SetName("Positive_Data_SOPConfig_Update");
+        }
+
+        //ImageReviewer
+        public static IEnumerable ImageReviewer_Get_Positive_TestData()
+        {
+            yield return new TestCaseData(1).SetName("ImageReviewer_Get_Positive");
+        }
+
+
+        // =====================================================
+        // ImageReviewer – UPDATE – POSITIVE
+        // =====================================================
+        public static IEnumerable<TestCaseData> ImageReviewer_Update_Positive_TestData()
+        {
+            yield return new TestCaseData(
+                Prepare(seed: (ImageRevUpdateRequest req) =>
+                {
+                    req.consumerProductId = 8;
+                    req.statusCode = 1479;
+                    req.statusCodeName = "testing";
+                    req.reasonCode = 1490;
+                    req.reasonComments = "Reason Comments Updated";
+                })
+            ).SetName("Positive_Data_ImageReviewer_Update");
+        }
+
+        //OrderShipment Config Get
+        public static IEnumerable OrderShipment_Get_Positive_TestData()
+        {
+            yield return new TestCaseData(1).SetName("OrderShipment_Get_Positive");
+        }
+
+
+        // =====================================================
+        // IssuingBank – UPDATE – POSITIVE
+        // =====================================================
+        public static IEnumerable<TestCaseData> IssuingBankArchive_Update_Positive_TestData()
+        {
+            yield return new TestCaseData(
+                Prepare(seed: (ArchiveUpdateRequest req) =>
+                {
+                    req.id = 8642;
+                    req.IsArchive = true;
+                })
+            ).SetName("IssuingBankArchive_Update");
+        }
+
+
+        // =====================================================
+        // Approval_Create_Positive_TestData
+        // =====================================================
+        public static IEnumerable<TestCaseData> Approval_Create_Positive_TestData()
+        {
+            yield return new TestCaseData(
+                Prepare(seed: (ApprovalCreateRequest req) =>
+                {
+                    req.binid = 2014;
+                    req.issuebank = 5131;
+                    req.producttype = 1148;
+                    req.platform = 1161;
+                    req.name = "test48964gf";
+                    req.description = "";
+                    req.assid = null;
+                    req.piiorrpp = "";
+                    req.quantity = 1;
+                    req.foctemplateid = 49966;
+                    req.boctemplateid = 49963;
+                    req.submisiondate = "2026-04-23";
+                    req.pclid = "11";
+                    req.customCardProgram = false;
+                    req.isembossed = false;
+                    req.deftemplateid = 103993;
+                    req.mccid = "";
+                    req.inComment = "";
+                    req.isSavedComment = false;
+                })
+            ).SetName("Approval_Create_Positive_Data");
+        }
+
+
+
+        // =====================================================
+        // Approval_Update_Positive_TestData
+        // =====================================================
+        public static IEnumerable<TestCaseData> Approval_Update_Positive_TestData()
+        {
+            yield return new TestCaseData(
+                Prepare(seed: (ApprovalUpdateRequest req) =>
+                {
+                    req.id = 74032;
+                    req.binid = 2014;
+                    req.issuebank = 5131;
+                    req.producttype = 1148;
+                    req.platform = 1161;
+                    req.name = "test48964gf";
+                    req.description = "";
+                    req.assid = null;
+                    req.piiorrpp = "";
+                    req.quantity = 1;
+                    req.foctemplateid = 49966;
+                    req.boctemplateid = 49963;
+                    req.submisiondate = "2026-04-23";
+                    req.pclid = "11";
+                    req.customCardProgram = false;
+                    req.isembossed = false;
+                    req.deftemplateid = 103993;
+                    req.mccid = "";
+                    req.inComment = "";
+                    req.isSavedComment = false;
+                })
+            ).SetName("Approval_Update_Positive_Data");
+        }
+
+        // =====================================================
+        // ApprovalDuplicate_Create_Positive_TestData
+        // =====================================================
+
+        public static IEnumerable ApprovalDuplicate_Create_Positive_TestData()
+        {
+            yield return new TestCaseData().SetName("ApprovalDuplicate_Create_Positive_Data");
+        }
+
+        // =====================================================
+        // ProgramBulk Upload_Create_Positive_TestData
+        // =====================================================
+
+        public static IEnumerable BulkUpload_Get_Positive_TestData()
+        {
+            yield return new TestCaseData(1).SetName("BulkUploadTemplate_Get__Positive_Data");
+        }
+
+
+
+        public static IEnumerable BulkUploadbyPCL_Get_Positive_TestData()
+        {
+            yield return new TestCaseData(1).SetName("BulkUploadbyPCL_Get__Positive_Data");
+        }
+
+
+        // BulkPrgCancel
+        public static IEnumerable<TestCaseData> BulkPrgCancel_Update_Positive_TestData()
+        {
+            yield return new TestCaseData(
+                Prepare(seed: (BulkPrgCancelUpdateReq req) =>
+                {
+                    req.uploadedS3FileId = 17973;
+                    req.isProgramCreateFlag = false;
+
+                })
+            ).SetName("BulkPrgCancel_Update_Positive_Data");
+        }
+
+
+
+        // =====================================================
+        // bcssconfigurations_Create_Positive_TestData
+        // =====================================================
+        public static IEnumerable<TestCaseData> bcssconfigurations_Create_Positive_TestData()
+        {
+            yield return new TestCaseData(
+                Prepare(seed: (bcssconfCreateRequest req) =>
+                {
+                    req.description = "desc";
+                    req.profileName = "prof1";
+                    req.cvvDateFormatId = 67;
+                    req.cvV2DateFormatId = 68;
+                    req.cvvKeyPairId = 73;
+                    req.cvV2KeyPairId = 73;
+                    req.serviceCodeId = 96;
+                    req.pclid = "13";
+                })
+            ).SetName("bcssconfigurations_Create_Positive_Data");
+        }
+
+        // bcssconfigurations_Update_Positive_TestData
+        public static IEnumerable<TestCaseData> bcssconfigurations_Update_Positive_TestData()
+        {
+            yield return new TestCaseData(
+                Prepare(seed: (bcssconfUpdateRequest req) =>
+                {
+                    req.description = "descy";
+                    req.profileName = "prof1";
+                    req.cvvDateFormatId = 67;
+                    req.cvV2DateFormatId = 68;
+                    req.cvvKeyPairId = 73;
+                    req.cvV2KeyPairId = 73;
+                    req.serviceCodeId = 96;
+                    req.useServiceCodeCVVId = 1033;
+                    req.useServiceCodeCVV2Id = 1033;
+                    req.pvkiCode = "33";
+                    req.cvkType = "25";
+                    req.pclid = "13";
+                    req.id = 19226;
+
+                })
+            ).SetName("bcssconfigurations_Update_Positive_Data");
+        }
+
+        // BankidNumber
+        public static IEnumerable BankidNumber_Get_Positive_TestData()
+        {
+            yield return new TestCaseData(1).SetName("BankidNumber_Get__Positive_Data");
+        }
+
+
+
+        // =====================================================
+        // GeneralsettingsContactinfo_Create_Positive_TestData
+        // =====================================================
+        public static IEnumerable<TestCaseData> GeneralsetContactinfo_Create_Positive_TestData()
+        {
+            yield return new TestCaseData(
+                Prepare(seed: (ContactinfoCreateRequest req) =>
+                {
+                    //req.name = "name9";
+                    req.title = "title1";
+                    //req.email = "email1283@gmail.cd";
+                    req.officeNo = "12345678";
+                    req.mobileNo = "123456789";
+                    req.otherNo = "12345678910";
+                    req.note = "note";
+
+                    req.addressesList = new List<ContactinfoCreateRequest.AddressesList>
+                    {
+                new ContactinfoCreateRequest.AddressesList
+                {
+                    street1 = "street1",
+                    street2 = "street2",
+                    city    = "city1",
+                    state   = "s1",
+                    zip     = "123",  // zip is string in the model
+                    countryId = 21
+                }
+                    };
+
+                    req.pclId = 13;
+                })
+            ).SetName("GeneralsetContactinfo_Create_Positive_Data");
+        }
+
+
+        // bcssconfigurations_Update_Positive_TestData
+        public static IEnumerable<TestCaseData> GeneralsetContactinfo_Update_Positive_TestData()
+        {
+            yield return new TestCaseData(
+                Prepare(seed: (ContactinfoUpdateRequest req) =>
+                {
+                    //req.name = "name9";
+                    req.title = "title1";
+                    //req.email = "email1283@gmail.cd";
+                    req.officeNo = "12345678";
+                    req.mobileNo = "123456789";
+                    req.otherNo = "12345678910";
+                    req.note = "note";
+                    req.addressesList = new List<ContactinfoUpdateRequest.AddressesList>
+                    {
+                new ContactinfoUpdateRequest.AddressesList
+                {
+                    street1 = "street1",
+                    street2 = "street2",
+                    city    = "city1",
+                    state   = "s1",
+                    zip     = "123",  // zip is string in the model
+                    countryId = 21
+                }
+                    };
+                    req.pclid = "13";
+                    req.contactId = 33948;
+
+                })
+            ).SetName("GeneralsetContactinfo_Update_Positive_Data");
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
+           
 }
 
+   

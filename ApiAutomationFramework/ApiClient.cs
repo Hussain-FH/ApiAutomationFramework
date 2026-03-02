@@ -47,6 +47,15 @@ public class ApiClient : IApiClient
             return await _client.ExecuteAsync(request);
         }
 
+
+        public async Task<RestResponse> PostAsync(string endpoint)
+        {
+            var request = CreateRequest(endpoint, Method.Post);
+            return await _client.ExecuteAsync(request);
+        }
+
+
+
         public async Task<RestResponse> PutAsync(string endpoint, object payload)
         {
             var request = CreateRequest(endpoint, Method.Put);
