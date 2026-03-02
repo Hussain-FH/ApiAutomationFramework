@@ -69,6 +69,11 @@ namespace ApiAutomationFramework
         public static string HotStampDieDrp_Get => Url("programs/hotstampdie?PclId=13");
         public static string TippingModulDrp_Get => Url("programs/tippingmodule");
 
+        //Card Personalize
+        public static string CardPersonalize_Create => Url("cards/carddesign");
+        
+        
+
         //categories
         public static string Categories_Create => Url("categories");
         public static string Categories_Rename => Url("categories/rename");

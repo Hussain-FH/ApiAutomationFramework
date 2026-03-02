@@ -15,6 +15,8 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
+
 
 namespace APITestSolution.DataProviders
 {
@@ -263,59 +265,95 @@ namespace APITestSolution.DataProviders
 
 
 
+
         //EMV Card Profile - POST, GET, PUT, Delete
-        public static IEnumerable<TestCaseData> EMV_CardProfile_Create_Positive_TestData()
+        public static IEnumerable EMV_CardProfile_Create_Positive_TestData()
         {
             yield return new TestCaseData(
                 Prepare(seed: (EMVCardProfilesCreateRequests req) =>
                 {
-
                     req.issuerId = 8440;
-
-
                 })
             ).SetName("EMV_CardProfiles_Create_Positive_Data");
         }
 
-        public static IEnumerable<TestCaseData> EMV_CardProfile_Create_Negative_TestData()
+        public static IEnumerable EMV_CardProfile_Create_Negative_TestData()
         {
             yield return new TestCaseData(
                 Prepare(seed: (EMVCardProfilesCreateRequests req) =>
                 {
                     req.name = "sbfjhwbejhfbwejhfgwjehfghegfjwegvfhgvfhgwevfhgwevfhkgwevfhgwevfhgw";
                     req.issuerId = 8440;
-
-
                 })
             ).SetName("EMV_CardProfiles_Create_Negative_Data");
         }
 
-        public static IEnumerable<TestCaseData> EMV_CardProfile_Update_Positive_TestData()
+        public static IEnumerable EMV_CardProfile_Update_Positive_TestData()
         {
             yield return new TestCaseData(
                 Prepare(seed: (EMVCardProfilePutRequest req) =>
                 {
-
                     req.issuerId = 8440;
-
-
                 })
             ).SetName("EMV_CardProfiles_Update_Positive_Data");
         }
 
-        public static IEnumerable<TestCaseData> EMV_CardProfile_Update_Negative_TestData()
+        public static IEnumerable EMV_CardProfile_Update_Negative_TestData()
         {
             yield return new TestCaseData(
                 Prepare(seed: (EMVCardProfilePutRequest req) =>
                 {
                     req.name = "sbfjhwbejhfbwejhfgwjehfghegfjwegvfhgvfhgwevfhgwevfhkgwevfhgwevfhgw";
                     req.issuerId = 8440;
-
-
                 })
             ).SetName("EMV_CardProfiles_Update_Negative_Data");
         }
 
+
+
+        //EMV Modules -Post,Put,Get,Delete
+
+        public static IEnumerable EMV_Modules_Create_Positive_TestData()
+        {
+            yield return new TestCaseData(
+                Prepare(seed: (EMV_Module_Create_Request req) =>
+                {
+                    req.groupId = new Random().Next(1, 999);
+                })
+            ).SetName("EMV_Modules_Create_Positive_Data");
+        }
+
+        public static IEnumerable EMV_Modules_Create_Negative_TestData()
+        {
+            yield return new TestCaseData(
+                Prepare(seed: (EMV_Module_Create_Request req) =>
+                {
+                    req.name = Guid.NewGuid().ToString("N").Substring(0, 60);
+                    req.groupId = new Random().Next(1, 1000);
+                })
+            ).SetName("EMV_Modules_Create_Negative_Data");
+        }
+
+        public static IEnumerable EMV_Modules_Update_Positive_TestData()
+        {
+            yield return new TestCaseData(
+                Prepare(seed: (EMV_Module_Update_Request req) =>
+                {
+                    req.groupId = new Random().Next(1, 1000);
+                })
+            ).SetName("EMV_Modules_Update_Positive_Data");
+        }
+
+        public static IEnumerable EMV_Modules_Update_Negative_TestData()
+        {
+            yield return new TestCaseData(
+                Prepare(seed: (EMV_Module_Update_Request req) =>
+                {
+                    req.name = Guid.NewGuid().ToString("N").Substring(0, 60);
+                    req.groupId = new Random().Next(1000, 10000);
+                })
+            ).SetName("EMV_Modules_Update_Negative_Data");
+        }
 
         // =====================================================
         // SLA – CREATE (POST) — split providers
@@ -680,7 +718,7 @@ namespace APITestSolution.DataProviders
                 .SetName("Positive_Data_TippingModuleDrp_Get_ById");
         }
 
-        
+
         // =====================================================
         // Categories_Create_Positive_TestData
         // =====================================================
@@ -736,9 +774,9 @@ namespace APITestSolution.DataProviders
             yield return new TestCaseData(
                 new CategoriesturnonoffRequest
                 {
-                   pclid= 13,
-                   categoryId= 447,
-                   active= true 
+                    pclid = 13,
+                    categoryId = 447,
+                    active = true
                 }
             ).SetName("PutCategory_TurnOffON_Valid");
         }
@@ -751,10 +789,10 @@ namespace APITestSolution.DataProviders
             yield return new TestCaseData(
                 new CategoriesmoveupdownRequest
                 {
-                    pclid = 127,  
-                    isUp= true,  
-                    categoryId= 446, 
-                    parentCategoryId= 442 
+                    pclid = 127,
+                    isUp = true,
+                    categoryId = 446,
+                    parentCategoryId = 442
                 }
             ).SetName("PutCategory_MoveupDown_Valid");
         }
@@ -767,9 +805,9 @@ namespace APITestSolution.DataProviders
             yield return new TestCaseData(
                 new CategoriesMakedefaultRequest
                 {
-                    PclId= 118 ,
-                    CategoryId=475,
-                    CategoryTypeId= 266
+                    PclId = 118,
+                    CategoryId = 475,
+                    CategoryTypeId = 266
                 }
             ).SetName("PutCategory_Makedefault_Valid");
         }
@@ -789,20 +827,23 @@ namespace APITestSolution.DataProviders
 
         // ✅ POSITIVE TEST DATA
         public static IEnumerable CSPProgramCardholderdrp_Get_Positive_TestData()
-            {
-                yield return new TestCaseData(1).SetName("CSPProgramCardholderdrp_Get_Positive");
-            }
+        {
+            yield return new TestCaseData(1).SetName("CSPProgramCardholderdrp_Get_Positive");
+        }
 
-            public static IEnumerable CSPProgramDymInfo_Get_Positive_TestData()
-            {
-                yield return new TestCaseData(1).SetName("CSPProgramDymInfo_Get_Positive");
-            }
+        public static IEnumerable CSPProgramDymInfo_Get_Positive_TestData()
+        {
+            yield return new TestCaseData(1).SetName("CSPProgramDymInfo_Get_Positive");
+        }
 
         public static IEnumerable CSPProgramComponent_Get_Positive_TestData()
         {
             yield return new TestCaseData(1).SetName("CSPProgramComponent_Get_Positive");
         }
 
+
+
     }
 }
+
 

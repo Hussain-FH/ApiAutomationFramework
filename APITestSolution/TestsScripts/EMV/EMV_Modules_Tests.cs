@@ -11,29 +11,30 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using APITestSolution.DataProviders;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Diagnostics.Metrics;
 
 namespace APITestSolution.TestsScripts.EMV
 {
     [TestFixture]
     public class EMV_Modules_Tests : BaseTest
     {
-        //common method to create new Modules record and used this Id and perform Put and Get and Delete operations
-        private async Task<int> CreateEmvModulesAndReturnIdAsync()
+        // =====================================================
+        // Common pre-requisite: Create EMV Module and return Id
+        // =====================================================
+        private async Task<int> CreateEmvModuleAndReturnIdAsync()
         {
             var endpoint = ApiEndpoints.EMVModules_create;
 
-            // Build a positive payload 
-            var payload = new EMVCardProfilesCreateRequests
+            var payload = new EMV_Module_Create_Request
             {
-                name = "Auto_EMVProfile_" + Guid.NewGuid().ToString("N").Substring(0, 8),
-                issuerId = 8440,
-                expirationDate =DateTime.UtcNow.AddDays(new Random().Next(30, 365)).ToString("yyyy-MM-dd")//random valid dates 
-
+                // basic valid values; other strings will be auto-filled by Prepare in real tests
+                name = "Auto_EMVModule_" + Guid.NewGuid().ToString("N").Substring(0, 8),
+                description = "Auto_Description",
+                travelerLabel = "Auto_TL",
+                cmiProgram = "Auto_CMIP",
+                groupId = new Random().Next(1, 999),
             };
 
-            _test.Info("Pre-requisite: Creating EMV Card Profile for UPDATE/GET test...");
+            _test.Info("Pre-requisite: Creating EMV Module for UPDATE/GET/DELETE test...");
             _test.Info($"Endpoint: {endpoint}");
             _test.Info($"Pre-Req Request Payload: {JsonConvert.SerializeObject(payload)}");
 
@@ -42,33 +43,34 @@ namespace APITestSolution.TestsScripts.EMV
             _test.Info($"Pre-Req Response Status: {response.StatusCode}");
             _test.Info($"Pre-Req Response Body: {response.Content}");
 
-            // Expect 201 Created (same as your positive create test)
+            // Expect 201 Created
             ResponseValidator.ValidateStatusCode(response, HttpStatusCode.Created);
 
             var actualMessage = (response.Content ?? string.Empty).Trim().Trim('"');
 
-            // Your API returns something like: "EMV Card Profile 1234 Added Successfully."
+            // Assuming API returns something like: "EMV Module 123 Added Successfully."
             var idString = new string(actualMessage.Where(char.IsDigit).ToArray());
 
             Assert.That(idString, Is.Not.Empty,
-                "Pre-requisite CREATE did not return a valid numeric EMV Card Profile Id in the message.");
+                "Pre-requisite CREATE did not return a valid numeric EMV Module Id in the message.");
 
-            int cardProfileId = int.Parse(idString);
+            int moduleId = int.Parse(idString);
 
-            _test.Info($"Pre-requisite: EMV Card Profile created successfully with Id = {cardProfileId}");
+            _test.Info($"Pre-requisite: EMV Module created successfully with Id = {moduleId}");
 
-            return cardProfileId;
+            return moduleId;
         }
 
-        // 🔖 POST – Create (Positive)
-        [TestCaseSource(
-            typeof(UserDataProvider),
-            nameof(UserDataProvider.EMV_CardProfile_Create_Positive_TestData))]
-        public async Task EMVCardProfile_Creation_PositiveTestMethod(EMVCardProfilesCreateRequests payload)
+        // =====================================================
+        // POST – Create (Positive)
+        // =====================================================
+
+        [TestCaseSource(typeof(UserDataProvider), nameof(UserDataProvider.EMV_Modules_Create_Positive_TestData))]
+        public async Task EMVModules_Creation_PositiveTestMethod(EMV_Module_Create_Request payload)
         {
             var endpoint = ApiEndpoints.EMVModules_create;
 
-            _test.Info("Running EMV Card Profile CREATE POSITIVE test...");
+            _test.Info("Running EMV Modules CREATE POSITIVE test...");
             _test.Info($"Endpoint: {endpoint}");
             _test.Info($"Request Payload: {JsonConvert.SerializeObject(payload)}");
 
@@ -81,31 +83,32 @@ namespace APITestSolution.TestsScripts.EMV
             ResponseValidator.ValidateStatusCode(response, HttpStatusCode.Created);
 
             var actualMessage = (response.Content ?? string.Empty).Trim().Trim('"');
-            var CardProfileId = new string(actualMessage.Where(char.IsDigit).ToArray());
+            var moduleId = new string(actualMessage.Where(char.IsDigit).ToArray());
             var expectedMessage =
-                "EMV Card Profile " + CardProfileId + " Added Successfully.";
+                "EMV Module " + moduleId + " Added Successfully.";
 
             Assert.That(actualMessage, Is.EqualTo(expectedMessage));
-            _test.Pass("EMV Card Profile CREATE (positive) assertions passed.");
+            _test.Pass("EMV Modules CREATE (positive) assertions passed.");
         }
 
-        // 🔖 POST – Create (Negative)
-        [TestCaseSource(
-            typeof(UserDataProvider),
-            nameof(UserDataProvider.EMV_CardProfile_Create_Negative_TestData))]
-        public async Task EMVCardProfile_Creation_NegativeTestMethod(EMVCardProfilesCreateRequests payload)
+        // =====================================================
+        // POST – Create (Negative)
+        // =====================================================
+        [TestCaseSource(typeof(UserDataProvider), nameof(UserDataProvider.EMV_Modules_Create_Negative_TestData))]
+        public async Task EMVModules_Creation_NegativeTestMethod(EMV_Module_Create_Request payload)
         {
             var endpoint = ApiEndpoints.EMVModules_create;
 
-            _test.Info("Running EMV Card Profile CREATE NEGATIVE test...");
+            _test.Info("Running EMV Modules CREATE NEGATIVE test...");
             _test.Info($"Endpoint: {endpoint}");
             _test.Info($"Request Payload: {JsonConvert.SerializeObject(payload)}");
 
             var response = await _apiClient.PostAsync(endpoint, payload);
 
-
             _test.Info($"Response Status: {response.StatusCode}");
             _test.Info($"Response Body: {response.Content}");
+
+            // Expect 400 BadRequest
             ResponseValidator.ValidateStatusCode(response, HttpStatusCode.BadRequest);
 
             var actualMessage = (response.Content ?? string.Empty).Trim().Trim('"');
@@ -123,30 +126,25 @@ namespace APITestSolution.TestsScripts.EMV
 
             Assert.That(messageForAssert,
                 Does.Match(@"(?i)(required|invalid|error|missing|failed|not\s*allowed|format)"));
-            _test.Pass("EMV Card Profile CREATE (negative) assertions passed.");
+            _test.Pass("EMV Modules CREATE (negative) assertions passed.");
         }
 
-        // 🔖 PUT – Update (Positive)  ✅ UPDATED TO USE COMMON PRE-REQ
-        [TestCaseSource(
-            typeof(UserDataProvider),
-            nameof(UserDataProvider.EMV_CardProfile_Update_Positive_TestData))]
-        public async Task EMVCardProfile_Update_PositiveTestMethod(EMVCardProfilePutRequest payload)
+        // =====================================================
+        // PUT – Update (Positive)
+        // =====================================================
+
+        [TestCaseSource(typeof(UserDataProvider), nameof(UserDataProvider.EMV_Modules_Update_Positive_TestData))]
+        public async Task EMVModules_Update_PositiveTestMethod(EMV_Module_Update_Request payload)
         {
-            // 1️⃣ Pre-requisite: Create a valid EMV Modules and get its Id
-            int cardProfileId = await CreateEmvModulesAndReturnIdAsync();
+            // Pre-req: create a module
+            int moduleId = await CreateEmvModuleAndReturnIdAsync();
 
-            // 2️⃣ Inject the valid id into the PUT payload
-            payload.cardprofileid = cardProfileId;
+            // Inject the valid id into the PUT payload
+            payload.id = moduleId;
 
-            // Optional: If you want to always ensure name is marked as updated:
-            if (!string.IsNullOrWhiteSpace(payload.name))
-            {
-                payload.name = "AutoUpdate_" + payload.name;
-            }
+            var endpoint = ApiEndpoints.EMVModules_update;
 
-            var endpoint = ApiEndpoints.EMVCardProfiles_update;
-
-            _test.Info("Running EMV Card Profile UPDATE POSITIVE test...");
+            _test.Info("Running EMV Modules UPDATE POSITIVE test...");
             _test.Info($"Endpoint: {endpoint}");
             _test.Info($"Request Payload: {JsonConvert.SerializeObject(payload)}");
 
@@ -158,31 +156,30 @@ namespace APITestSolution.TestsScripts.EMV
             ResponseValidator.ValidateStatusCode(response, HttpStatusCode.OK);
 
             var actualMessage = (response.Content ?? string.Empty).Trim().Trim('"');
-            var CardProfileId = new string(actualMessage.Where(char.IsDigit).ToArray());
+            var modulesId = new string(actualMessage.Where(char.IsDigit).ToArray());
             var expectedMessage =
-                "EMV Card Profile " + CardProfileId + " Updated Successfully.";
+                "EMV Module " + modulesId + " Updated Successfully.";
 
             Assert.That(actualMessage, Is.EqualTo(expectedMessage));
-            _test.Pass("EMV Card Profile Update (positive) assertions passed.");
-
-
+            _test.Pass("EMV Modules UPDATE (positive) assertions passed.");
         }
 
-        // 🔖 PUT – Update (Negative)  (UNCHANGED)
-        [TestCaseSource(
-            typeof(UserDataProvider),
-            nameof(UserDataProvider.EMV_CardProfile_Update_Negative_TestData))]
-        public async Task EMVCardProfile_Update_NegativeTestMethod(EMVCardProfilePutRequest payload)
+        // =====================================================
+        // PUT – Update (Negative)
+        // =====================================================
+
+        [TestCaseSource(typeof(UserDataProvider), nameof(UserDataProvider.EMV_Modules_Update_Negative_TestData))]
+        public async Task EMVModules_Update_NegativeTestMethod(EMV_Module_Update_Request payload)
         {
-            // 1️⃣ Pre-requisite: Create a valid EMV Card Profile and get its Id
-            int cardProfileId = await CreateEmvModulesAndReturnIdAsync();
+            // Pre-req: create a module
+            int moduleId = await CreateEmvModuleAndReturnIdAsync();
 
-            // 2️⃣ Inject the valid id into the PUT payload
-            payload.cardprofileid = cardProfileId;
+            // Inject the valid id into the PUT payload
+            payload.id = moduleId;
 
-            var endpoint = ApiEndpoints.EMVCardProfiles_update;
+            var endpoint = ApiEndpoints.EMVModules_update;
 
-            _test.Info("Running EMV Card Profile UPDATE NEGATIVE test...");
+            _test.Info("Running EMV Modules UPDATE NEGATIVE test...");
             _test.Info($"Endpoint: {endpoint}");
             _test.Info($"Request Payload: {JsonConvert.SerializeObject(payload)}");
 
@@ -208,19 +205,21 @@ namespace APITestSolution.TestsScripts.EMV
 
             Assert.That(messageForAssert,
                 Does.Match(@"(?i)(required|invalid|error|missing|failed|not\s*allowed|format)"));
-            _test.Pass("EMV Card Profile UPDATE (negative) assertions passed.");
+            _test.Pass("EMV Modules UPDATE (negative) assertions passed.");
         }
 
+        // =====================================================
+        // GET ALL – Positive
+        // =====================================================
         [Test]
-        public async Task EMVCardProfile_GetAll_Positive_TestMethod()
+        public async Task EMVModules_GetAll_Positive_TestMethod()
         {
-            // 1️⃣ Pre-requisite: Create a valid EMV Card Profile and get its Id
-            int cardProfileId = await CreateEmvModulesAndReturnIdAsync();
+            // Pre-req: create at least one module
+            int moduleId = await CreateEmvModuleAndReturnIdAsync();
 
-            // 2️⃣ Call the GET ALL endpoint (no id in URL)
-            var endpoint = ApiEndpoints.EMVCardProfiles_Get; 
+            var endpoint = ApiEndpoints.EMVModules_GetAll;
 
-            _test.Info("Running EMV Card Profile GET ALL POSITIVE test...");
+            _test.Info("Running EMV Modules GET ALL POSITIVE test...");
             _test.Info($"Endpoint: {endpoint}");
 
             var response = await _apiClient.GetAsync(endpoint);
@@ -228,41 +227,23 @@ namespace APITestSolution.TestsScripts.EMV
             _test.Info($"Response Status: {response.StatusCode}");
             _test.Info($"Response Body: {response.Content}");
 
-            // ✅ Expect 200 OK
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
             var body = (response.Content ?? string.Empty).Trim();
-            Assert.That(body.Length, Is.GreaterThan(0), "Expected non-empty EMV Card Profile list.");
+            Assert.That(body.Length, Is.GreaterThan(0), "Expected non-empty EMV Modules list.");
 
-            // ✅ Response is an array
             var arr = JArray.Parse(body);
-            Assert.That(arr.Count, Is.GreaterThan(0), "Expected one or more EMV Card Profiles.");
+            Assert.That(arr.Count, Is.GreaterThan(0), "Expected one or more EMV Modules.");
 
-            // 3️⃣ Check that the created profile exists in the list
             var matchingItems = arr.Where(x =>
-                (int?)x["id"] == cardProfileId
+                (int?)x["id"] == moduleId
             ).ToList();
 
             Assert.That(matchingItems.Count, Is.GreaterThan(0),
-                $"Expected to find EMV Card Profile with id = {cardProfileId} in GET ALL response, but it was not found.");
+                $"Expected to find EMV Module with id = {moduleId} in GET ALL response, but it was not found.");
 
-            // Optionally, add a few more checks on the first matching item
-            var createdProfile = matchingItems.First();
-
-            // issuerId validation if needed
-            var issuerIdToken = createdProfile["issuerId"];
-            if (issuerIdToken != null && issuerIdToken.Type != JTokenType.Null)
-            {
-                int issuerId = issuerIdToken.ToObject<int>();
-                Assert.That(issuerId, Is.GreaterThan(0), "issuerId should be a positive integer.");
-            }
-
-            // name not empty
-            var name = (createdProfile["name"]?.ToString() ?? string.Empty).Trim();
-            Assert.That(name.Length, Is.GreaterThan(0), "Name should not be empty for created EMV Card Profile.");
-
-            _test.Pass("EMV Card Profile GET ALL (positive) assertions passed with created profile present in the list.");
+            _test.Pass("EMV Modules GET ALL (positive) assertions passed with created module present in the list.");
         }
-    
+
     }
 }

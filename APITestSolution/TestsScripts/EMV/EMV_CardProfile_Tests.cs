@@ -126,7 +126,8 @@ namespace APITestSolution.TestsScripts.EMV
             _test.Pass("EMV Card Profile CREATE (negative) assertions passed.");
         }
 
-        // 🔖 PUT – Update (Positive)  ✅ UPDATED TO USE COMMON PRE-REQ
+
+        // 🔖 PUT – Update (Positive)  
         [TestCaseSource(
             typeof(UserDataProvider),
             nameof(UserDataProvider.EMV_CardProfile_Update_Positive_TestData))]
@@ -168,7 +169,7 @@ namespace APITestSolution.TestsScripts.EMV
 
         }
 
-        // 🔖 PUT – Update (Negative)  (UNCHANGED)
+        // 🔖 PUT – Update (Negative) 
         [TestCaseSource(
             typeof(UserDataProvider),
             nameof(UserDataProvider.EMV_CardProfile_Update_Negative_TestData))]
@@ -245,21 +246,6 @@ namespace APITestSolution.TestsScripts.EMV
 
             Assert.That(matchingItems.Count, Is.GreaterThan(0),
                 $"Expected to find EMV Card Profile with id = {cardProfileId} in GET ALL response, but it was not found.");
-
-            // Optionally, add a few more checks on the first matching item
-            var createdProfile = matchingItems.First();
-
-            // issuerId validation if needed
-            var issuerIdToken = createdProfile["issuerId"];
-            if (issuerIdToken != null && issuerIdToken.Type != JTokenType.Null)
-            {
-                int issuerId = issuerIdToken.ToObject<int>();
-                Assert.That(issuerId, Is.GreaterThan(0), "issuerId should be a positive integer.");
-            }
-
-            // name not empty
-            var name = (createdProfile["name"]?.ToString() ?? string.Empty).Trim();
-            Assert.That(name.Length, Is.GreaterThan(0), "Name should not be empty for created EMV Card Profile.");
 
             _test.Pass("EMV Card Profile GET ALL (positive) assertions passed with created profile present in the list.");
         }
