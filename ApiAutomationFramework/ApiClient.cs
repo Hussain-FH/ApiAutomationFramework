@@ -75,6 +75,61 @@ public class ApiClient : IApiClient
             request.AddJsonBody(payload);
             return await _client.ExecuteAsync(request);
         }
+
+        public async Task<RestResponse> PostFileAsync(string endpoint, object payload)
+        {
+            var request = CreateRequest(endpoint, Method.Post);
+            request.AlwaysMultipartFormData = true;
+
+            string? fileParamName = null;
+            string? filePath = null;
+
+            // Use reflection to extract properties
+            foreach (var prop in payload.GetType().GetProperties())
+            {
+                var name = prop.Name;
+                var value = prop.GetValue(payload);
+
+                if (value == null) continue;
+
+                // Detect file property (by convention: filePath)
+                if (name.Equals("filePath", StringComparison.OrdinalIgnoreCase))
+                {
+                    fileParamName = "file";
+                    filePath = value.ToString();
+                }
+                else
+                {
+                    request.AddParameter(name, value.ToString());
+                }
+            }
+
+            if (fileParamName == null || filePath == null)
+                throw new ArgumentException("Payload must contain a 'filePath' property.");
+
+            request.AddFile(fileParamName, filePath);
+
+            return await _client.ExecuteAsync(request);
+        }
+
+        public async Task<RestResponse> GetFileAsync(string endpoint, object payload)
+        {
+            var request = CreateRequest(endpoint, Method.Get);
+
+            // Add query parameters from payload properties
+            foreach (var prop in payload.GetType().GetProperties())
+            {
+                var name = prop.Name;
+                var value = prop.GetValue(payload);
+                if (value != null)
+                {
+                    request.AddParameter(name, value.ToString());
+                }
+            }
+
+            return await _client.ExecuteAsync(request);
+        }
+
     }
 
 }

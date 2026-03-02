@@ -16,4 +16,10 @@
 	<ItemGroup>
 		<ProjectReference Include="..\ApiAutomationFramework\ApiAutomationFramework.csproj" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="TestData\sample.pdf">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
 </Project>
