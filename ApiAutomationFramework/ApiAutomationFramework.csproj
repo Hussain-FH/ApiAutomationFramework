@@ -32,6 +32,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Folder Include="Models\Request\Bulletins\" />
 	  <Folder Include="Models\Response\ArchiveUpdateResponse\" />
 	  <Folder Include="Models\Response\Approval\" />
 	</ItemGroup>
