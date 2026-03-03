@@ -123,6 +123,20 @@ namespace ApiAutomationFramework
         public static string Generalsettings_Update => Url("generalsettings/contactinfo");
 
 
+        //Bulletins
+        public static string CSPBulletins_Get => Url("bulletins");
+        public static string BulletinAcknowledge_Post => Url("bulletins/bulletinuseracknowledgement");
+
+
+        //File Upload
+        public static string CSPBulletins_FileUpload => Url("filesupload");
+
+        //File Download
+        public static string CSPBulletins_FileDownload => Url("bulletins/file");
+
+        //View Order Details - Special Handling / Pull Request Section Get API
+        public static string OrderDetailsView_Get(int id) => Url($"orders/pullorcancelorders?ShipmentId={id}");
+
 
     }
 

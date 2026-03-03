@@ -28,6 +28,8 @@ using Azure.Core;
 using ApiAutomationFramework.Models.Request.bcssconfigurations;
 using ApiAutomationFramework.Models.Request.GeneralsetContactinfo;
 using Gherkin.Ast;
+using ApiAutomationFramework.Models.Request.Bulletins;
+using System.IO;
 
 namespace APITestSolution.DataProviders
 {
@@ -1149,6 +1151,82 @@ namespace APITestSolution.DataProviders
         }
 
 
+        // =====================================================
+        // CSP_Bulletins_TestData
+        // =====================================================
+        // ✅ POSITIVE TEST DATA
+        public static IEnumerable CSPBulletins_Get_Positive_TestData()
+        {
+            yield return new TestCaseData().SetName("CSPBulletins_Get_Positive_TestData");
+        }
+
+        // =====================================================
+        // Bulletins_Create_Positive_TestData
+        // =====================================================       
+        public static IEnumerable<TestCaseData> CSPBulletins_Create_Positive_TestData()
+        {
+            yield return new TestCaseData(
+                new CSPBulletinsCreateRequest
+                {
+                    bulletinName = RandomData.AutoTag(6),
+                    description = RandomData.AutoTag(6),
+                    publishDate = DateTime.Parse(RandomData.FutureDate(7, 365)),
+                    pclIds = new List<int> { 110, 11 },
+                    isArchived = false,
+                    bulletinId = null,                    
+                }
+            ).SetName("CSPBulletins_Create_Positive_TestData"); ;
+        }
+        // =====================================================
+        // Bulletins_File_Upload_Positive_TestData
+        // =====================================================       
+        public static IEnumerable<TestCaseData> CSPBulletins_Upload_File_Positive_TestData()
+        {
+            var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestData", "sample.pdf");
+            yield return new TestCaseData(
+                new FileUploadRequest
+                {
+                    pclmapid = 13,
+                    fileaccess = 1,
+                    filePath = filePath
+                }
+            ).SetName("CSPBulletins_Upload_File_Positive_Data");
+        }
+        // =====================================================
+        // Bulletins_File_Download_Positive_TestData
+        // ===================================================== 
+        public static IEnumerable<FileDownloadRequest> CSPBulletins_Download_File_Positive_TestData()
+        {
+            yield return new FileDownloadRequest
+            {
+                fileformat = 1,
+                entityid = 51059
+            };
+        }
+        // =====================================================
+        // Bulletins_Acknowledgement_Positive_TestData
+        // ===================================================== 
+        public static IEnumerable<TestCaseData> Bulletins_Ack_Positive_TestData()
+        {
+            // Use any bulletinId that exists and can be acknowledged in test env.
+
+            yield return new TestCaseData(
+                    new BulletinAcknowledgeRequest
+                    {
+                        bulletinId = new[] { 1 }    // bulletinId[0] = 1
+                    }
+                ).SetName("Bulletin_Acknowledge_Positive");
+        }
+
+        // =====================================================
+        // Orders – Get by Shipment ID – POSITIVE
+        // =====================================================
+        public static IEnumerable<TestCaseData> OrderDetailsView_Get_Positive_TestData()
+        {
+            // ✅ Use an Shipment id that can be viewed
+            yield return new TestCaseData(127)
+                .SetName("Positive_Data_OrderDetailsView_ByShipmentId_125");
+        }
 
 
 
